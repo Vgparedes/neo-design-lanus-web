@@ -33,7 +33,7 @@ export function Proyectos() {
   return (
     <>
       <PanelPagina id="proyectos-inmobiliarios" cantidad={fotos.proyectos.length} textoCantidad="Ver las {n} fotos" />
-      <Proceso id="como" etiqueta={proyectos.etiqueta} titulo={proyectos.titulo} lista={proyectos.puntos} />
+      <Proceso id="como" etiqueta={proyectos.etiqueta} titulo={proyectos.titulo} lista={proyectos.puntos} dibujos={["plano", "piezas", "armado", "armado"]} />
       <Galeria grupos={[{ id: "proyectos", nombre: "Proyectos inmobiliarios", fotos: fotos.proyectos }]} titulo="Proyectos inmobiliarios" />
       <Contacto />
     </>

@@ -50,21 +50,23 @@ export const paginas = {
   contacto: {
     menu: "Contacto",
     titulo: "Contacto · Neo Design Lanús",
-    descripcion: "Pedí tu presupuesto de muebles a medida. Estamos en Gral. Ferré 2101, esquina Margarita Weild, Lanús Este. WhatsApp 11 6444-4340.",
+    descripcion: "Pedí tu presupuesto de muebles a medida. Escribinos por WhatsApp o acercate al taller: Gral. Ferré 2101, esquina Margarita Weild, Lanús Este.",
   },
 } satisfies Record<string, { menu: string; titulo: string; descripcion: string }>;
 export type Ruta = keyof typeof paginas;
 
 export const contacto = {
   whatsapp: "5491164444340", // solo números, con 549 adelante
-  mail: "neodesignlanus@gmail.com",
-  /** Otro mail que figuraba en la web anterior */
-  mail2: "rubentdu@gmail.com",
-  telefonos: [
-    { visible: "11 6444-4340", numero: "5491164444340" },
-    { visible: "11 2309-7332", numero: "5491123097332" },
+  /* Los teléfonos y mails NUNCA se muestran escritos en la página (los levantan los bots
+     de spam): van como botones con "etiqueta". El número y la dirección quedan solo en el link. */
+  mails: [
+    { etiqueta: "Mandar un mail", direccion: "neodesignlanus@gmail.com" },
+    { etiqueta: "Mail alternativo", direccion: "rubentdu@gmail.com" }, // figuraba en la web anterior
   ],
-  telefonoVisible: "11 6444-4340",
+  telefonos: [
+    { etiqueta: "WhatsApp", numero: "5491164444340" },
+    { etiqueta: "WhatsApp, otra línea", numero: "5491123097332" },
+  ],
   direccion: "Gral. Ferré 2101, esq. Margarita Weild",
   localidad: "Lanús Este, Buenos Aires",
   mapa: "https://www.google.com/maps/search/?api=1&query=General+Ferr%C3%A9+2101%2C+Lan%C3%BAs+Este%2C+Buenos+Aires",
@@ -230,7 +232,7 @@ export const contactoPagina = {
   bajada: "Escribinos con tu consulta y te contestamos a la brevedad. También podés acercarte al taller.",
   dondeTitulo: "Dónde estamos",
   verMapa: "Ver en el mapa",
-  telefonosTitulo: "Teléfonos y WhatsApp",
+  telefonosTitulo: "WhatsApp",
   mailTitulo: "Mail",
   redesTitulo: "Redes",
 };
@@ -243,16 +245,27 @@ export const galeriaTextos = {
   siguiente: "Foto siguiente",
   cerrar: "Cerrar",
   consultar: "Consultar por WhatsApp",
-  /** Mensaje armado al consultar desde una foto */
-  mensaje: (cosa: string) => `Hola! Vi en la web "${cosa}" y quería consultar.`,
+  /** Mensaje armado al consultar desde una foto. Lleva el link a la foto: WhatsApp muestra
+   *  su miniatura arriba del mensaje, así el dueño sabe cuál es. Si la foto no tiene título,
+   *  se usa el nombre del ambiente o de la página. */
+  mensaje: ({ grupo, titulo, detalle, link, producto = false }: { grupo: string; titulo?: string; detalle?: string; link: string; producto?: boolean }) =>
+    [
+      `Hola! Vi en la web este ${producto ? "producto" : "trabajo"} de *${grupo}* y me interesa${titulo ? ":" : " algo parecido."}`,
+      titulo && `*${titulo}*`,
+      detalle,
+      link,
+      producto ? "¿Me podrían pasar precio y si lo tienen disponible? ¡Gracias!" : "¿Me podrían pasar precio y tiempo de entrega? ¡Gracias!",
+    ].filter(Boolean).join("\n"),
   ctaTitulo: "¿Querés algo así para tu espacio?",
   ctaTexto: "Mandanos medidas o una foto y te pasamos presupuesto.",
 };
 
 export const pie = {
-  donde: "Dónde estamos",
-  navegar: "Navegar",
-  seguinos: "Seguinos",
+  lema: "Diseñamos, producimos e instalamos muebles de melamina a medida desde nuestro taller de Lanús Este.",
+  secciones: "Secciones",
+  donde: "Visitanos",
+  comoLlegar: "Cómo llegar",
+  escribinos: "Escribinos",
   derechos: "Neo Design Lanús. Todos los derechos reservados.",
   volver: "Volver arriba",
 };
@@ -263,6 +276,19 @@ export const pie = {
    t = título y d = detalle (opcionales, se ven al ampliar la foto).
    Para sumar una foto: guardala como WebP de 800 px en la carpeta y agregá su línea. */
 export type Foto = { src: string; w: number; h: number; grande?: boolean; t?: string; d?: string };
+
+/* Cada foto tiene su propia dirección (/foto/sillones-03/) con su vista previa para WhatsApp.
+   Al compilar se arma una página chiquita por foto que lleva a su galería con la foto abierta.
+   Para eso cada carpeta de fotos dice en qué página está. */
+export const paginaDeFotos: Record<string, Ruta> = {
+  cocinas: "hogar", dormitorios: "hogar", escritorios: "hogar", sala: "hogar", placares: "hogar",
+  banos: "hogar", espejos: "hogar", sillones: "hogar", mesas: "hogar",
+  comercios: "comercios", proyectos: "proyectos-inmobiliarios", decoracion: "decoracion",
+};
+/** "img/sillones/03" -> "sillones-03" */
+export const idFoto = (src: string) => src.replace(/^img\//, "").replace(/\//g, "-");
+/** Dirección pública de la página de una foto (la que va en el mensaje de WhatsApp) */
+export const linkFoto = (src: string) => `${sitio.url}foto/${idFoto(src)}/`;
 
 export const fotos = {
   cocinas: [

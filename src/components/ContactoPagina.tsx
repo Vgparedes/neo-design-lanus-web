@@ -33,15 +33,18 @@ export function ContactoPagina() {
               <dt className="etiqueta text-gris">{t.telefonosTitulo}</dt>
               <dd className="mt-2 grid justify-items-start">
                 {contacto.telefonos.map((tel) => (
-                  <a key={tel.numero} className={`${claseDato} font-mono`} href={whatsapp(tel.numero)} target="_blank" rel="noreferrer">{tel.visible}</a>
+                  <a key={tel.numero} className={claseDato} href={whatsapp(tel.numero, "Hola! Quería hacer una consulta.")} target="_blank" rel="noreferrer">
+                    {tel.etiqueta} <Flecha diagonal className="w-3.5" />
+                  </a>
                 ))}
               </dd>
             </div>
             <div>
               <dt className="etiqueta text-gris">{t.mailTitulo}</dt>
               <dd className="mt-2 grid justify-items-start">
-                <a className={claseDato} href={`mailto:${contacto.mail}`}>{contacto.mail}</a>
-                <a className={claseDato} href={`mailto:${contacto.mail2}`}>{contacto.mail2}</a>
+                {contacto.mails.map((m) => (
+                  <a key={m.direccion} className={claseDato} href={`mailto:${m.direccion}`}>{m.etiqueta} <Flecha diagonal className="w-3.5" /></a>
+                ))}
               </dd>
             </div>
             <div>

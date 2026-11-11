@@ -103,8 +103,8 @@ export function Contacto() {
               {t.boton}
               <Flecha />
             </button>
-            <a className="inline-flex min-h-11 items-center font-mono text-sm leading-none text-white/80 underline decoration-white/40 underline-offset-6 hover:text-white hover:decoration-white" href={whatsapp(contacto.whatsapp)} target="_blank" rel="noreferrer">
-              WhatsApp · {contacto.telefonoVisible}
+            <a className="link-flecha text-white/84 underline decoration-white/40 underline-offset-6 hover:text-white hover:decoration-white" href={whatsapp(contacto.whatsapp, "Hola! Quería hacer una consulta.")} target="_blank" rel="noreferrer">
+              o directo por WhatsApp <Flecha diagonal className="w-3.5" />
             </a>
           </div>
         </div>

@@ -11,7 +11,7 @@ export function Inicio() {
     <>
       <Hero />
       <Rubros />
-      <Proceso id="proceso" {...proceso} />
+      <Proceso id="proceso" {...proceso} dibujos={["plano", "piezas", "armado", "caja"]} />
       <Nosotros />
       <Contacto />
     </>

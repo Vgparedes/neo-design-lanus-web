@@ -27,7 +27,9 @@ Hecha en **React + Vite + TypeScript + Tailwind v4** sobre la plantilla `~/krs/r
 | Datos para Google (dirección, teléfono) | `index.html`, bloque `application/ld+json` |
 | Imagen al compartir por WhatsApp (1200x630) | `public/img/compartir.jpg` |
 
-**Fotos nuevas:** WebP de 800 px de ancho (`01.webp`) y, si la original es grande, otra de 1600 px (`01-g.webp`, y en la lista `grande: true`).
+**Fotos nuevas:** WebP de 800 px de ancho (`01.webp`) y, si la original es grande, otra de 1600 px (`01-g.webp`, y en la lista `grande: true`). Además, una copia JPG de 600 px (`01-c.jpg`): es la miniatura que muestra WhatsApp cuando alguien consulta por esa foto.
+
+**Link de cada foto:** al compilar se arma `/foto/<carpeta>-<número>/` por cada foto de las galerías. Ese link va en el mensaje de WhatsApp ("Consultar por WhatsApp"), muestra la vista previa de la foto y lleva a su galería con la foto abierta. El texto del mensaje está en `galeriaTextos.mensaje` de `src/contenido.ts`.
 
 ## Probar y publicar
 

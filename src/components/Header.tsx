@@ -80,7 +80,7 @@ export function Header({ ruta }: { ruta: Ruta }) {
           rel="noreferrer"
           className="mt-auto inline-flex min-h-11 items-center pt-6 font-mono text-[13px] text-gris hover:text-white compu:hidden"
         >
-          WhatsApp · {contacto.telefonoVisible}
+          Escribinos por WhatsApp ↗
         </a>
       </nav>
 

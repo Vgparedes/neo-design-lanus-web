@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { contacto, galeriaTextos as t, type Foto as TFoto } from "../contenido";
+import { contacto, galeriaTextos as t, linkFoto, type Foto as TFoto } from "../contenido";
 import { Flecha, Foto, archivo, whatsapp } from "./Detalles";
 
 /** Un grupo de fotos con nombre (un ambiente de Hogar, una página o un producto). */
@@ -9,8 +9,17 @@ export type Grupo = { id: string; nombre: string; fotos: TFoto[] };
 /* Visor: la foto ampliada en un <dialog>, con anterior / siguiente,   */
 /* flechas del teclado, Esc para cerrar y el link para consultar.      */
 /* ------------------------------------------------------------------ */
-export function Visor({ fotos, indice, nombre, alCambiar, alCerrar }: {
-  fotos: TFoto[]; indice: number | null; nombre: string; alCambiar: (i: number) => void; alCerrar: () => void;
+/** Foto con el nombre de su grupo (ambiente, página o "Decoración") para el mensaje */
+type FotoGrupo = TFoto & { grupo: string };
+
+/** Abre la foto que viene en la dirección (?foto=img/sillones/03), cuando alguien entra
+ *  desde el link de un mensaje de WhatsApp. Devuelve la foto buscada o null. */
+function fotoDeLaDireccion() {
+  return typeof location === "undefined" ? null : new URLSearchParams(location.search).get("foto");
+}
+
+export function Visor({ fotos, indice, nombre, producto = false, alCambiar, alCerrar }: {
+  fotos: FotoGrupo[]; indice: number | null; nombre: string; producto?: boolean; alCambiar: (i: number) => void; alCerrar: () => void;
 }) {
   const dialogo = useRef<HTMLDialogElement>(null);
   const abierto = indice !== null;
@@ -35,7 +44,7 @@ export function Visor({ fotos, indice, nombre, alCambiar, alCerrar }: {
     return () => removeEventListener("keydown", teclas);
   });
 
-  const titulo = foto?.t || nombre;
+  const titulo = foto?.t || (producto ? nombre : foto?.grupo) || nombre;
   const botonNav = "grid size-12 place-items-center rounded-full border border-white/25 bg-negro/60 text-white backdrop-blur-sm hover:border-white";
 
   return (
@@ -80,7 +89,7 @@ export function Visor({ fotos, indice, nombre, alCambiar, alCerrar }: {
               {foto.d && <p className="mt-1.5 text-chico text-white/75">{foto.d}</p>}
             </div>
             <a
-              href={whatsapp(contacto.whatsapp, t.mensaje(foto.t ? `${foto.t} (${nombre})` : nombre))}
+              href={whatsapp(contacto.whatsapp, t.mensaje({ grupo: foto.grupo, titulo: foto.t, detalle: foto.d, link: linkFoto(foto.src), producto }))}
               target="_blank" rel="noreferrer"
               className="inline-flex min-h-11 items-center gap-2 text-chico text-acento-claro underline decoration-acento-claro/50 underline-offset-6 hover:decoration-acento-claro"
             >
@@ -97,6 +106,24 @@ export function Visor({ fotos, indice, nombre, alCambiar, alCerrar }: {
 /* Galería: filtros (si hay más de un grupo) y fotos en columnas, sin  */
 /* recortar. Cada foto es un botón que la abre en el visor.            */
 /* ------------------------------------------------------------------ */
+/** Una foto de la grilla: botón que la abre en el visor, con esquinas tipo visor al pasar el mouse. */
+function BotonFoto({ f, i, abrir, sizes }: { f: TFoto & { grupo: string }; i: number; abrir: (i: number) => void; sizes: string }) {
+  return (
+    <button type="button" onClick={() => abrir(i)} className="group relative block w-full overflow-hidden rounded-[4px] bg-blanco text-left">
+      <Foto
+        src={f.src} w={f.w} h={f.h} alt={f.t || `${f.grupo}, foto ${i + 1}`} sizes={sizes}
+        className="h-auto w-full transition-[scale] duration-700 ease-krsp group-hover:scale-103"
+      />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+        {["top-0 left-0 border-t-2 border-l-2", "top-0 right-0 border-t-2 border-r-2", "bottom-0 left-0 border-b-2 border-l-2", "right-0 bottom-0 border-r-2 border-b-2"].map((p) => (
+          <span key={p} className={`absolute size-3.5 border-white ${p}`} />
+        ))}
+      </span>
+      <span className="sr-only">{t.ampliar}</span>
+    </button>
+  );
+}
+
 export function Galeria({ grupos, titulo }: { grupos: Grupo[]; titulo: string }) {
   const [filtro, setFiltro] = useState("todo");
   const [indice, setIndice] = useState<number | null>(null);
@@ -105,6 +132,14 @@ export function Galeria({ grupos, titulo }: { grupos: Grupo[]; titulo: string })
   const todas = grupos.flatMap((g) => g.fotos.map((f) => ({ ...f, grupo: g.nombre })));
   const visibles = filtro === "todo" ? todas : todas.filter((f) => grupos.find((g) => g.id === filtro)?.nombre === f.grupo);
   const nombreFiltro = grupos.find((g) => g.id === filtro)?.nombre ?? titulo;
+
+  // Si se entró desde el link de una foto, se abre esa foto (con el filtro "Todo")
+  useEffect(() => {
+    const buscada = fotoDeLaDireccion();
+    const i = buscada ? todas.findIndex((f) => f.src === buscada) : -1;
+    if (i >= 0) setIndice(i);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const elegir = (id: string) => {
     setFiltro(id);
@@ -143,24 +178,7 @@ export function Galeria({ grupos, titulo }: { grupos: Grupo[]; titulo: string })
         <ul className="columns-2 gap-2.5 sm:columns-3 compu:columns-4">
           {visibles.map((f, i) => (
             <li key={f.src} className="mb-2.5 break-inside-avoid">
-              <button
-                type="button"
-                onClick={() => setIndice(i)}
-                className="group relative block w-full overflow-hidden rounded-[4px] bg-blanco text-left"
-              >
-                <Foto
-                  src={f.src} w={f.w} h={f.h} alt={f.t || `${f.grupo}, foto ${i + 1}`}
-                  sizes="(max-width: 640px) 50vw, (max-width: 900px) 33vw, 25vw"
-                  className="h-auto w-full transition-[scale] duration-700 ease-krsp group-hover:scale-103"
-                />
-                {/* Esquinas tipo visor al pasar el mouse o con el foco del teclado */}
-                <span aria-hidden="true" className="pointer-events-none absolute inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                  {["top-0 left-0 border-t-2 border-l-2", "top-0 right-0 border-t-2 border-r-2", "bottom-0 left-0 border-b-2 border-l-2", "right-0 bottom-0 border-r-2 border-b-2"].map((p) => (
-                    <span key={p} className={`absolute size-3.5 border-white ${p}`} />
-                  ))}
-                </span>
-                <span className="sr-only">{t.ampliar}</span>
-              </button>
+              <BotonFoto f={f} i={i} abrir={setIndice} sizes="(max-width: 640px) 50vw, (max-width: 900px) 33vw, 25vw" />
               {f.t && <p className="mt-2 px-0.5 text-[13px] leading-snug text-gris-oscuro">{f.t}</p>}
             </li>
           ))}
@@ -189,6 +207,16 @@ export function Productos({ fotos, titulo }: { fotos: TFoto[]; titulo: string })
     else productos.push({ id: k, nombre: f.t || titulo, fotos: [f] });
   });
 
+  // Si se entró desde el link de una foto, se abre el producto en esa foto
+  useEffect(() => {
+    const buscada = fotoDeLaDireccion();
+    for (const g of productos) {
+      const i = g.fotos.findIndex((f) => f.src === buscada);
+      if (i >= 0) return setAbierto({ g, i });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section className="bg-papel pt-[clamp(56px,7vw,104px)] pb-[clamp(88px,10vw,160px)]" id="galeria" aria-labelledby="galeria-titulo">
       <div className="ancho">
@@ -213,7 +241,7 @@ export function Productos({ fotos, titulo }: { fotos: TFoto[]; titulo: string })
               </button>
               <h3 className="mt-3.5 px-1.5 text-[15px] leading-snug tracking-[-.01em]">{p.nombre}</h3>
               <a
-                href={whatsapp(contacto.whatsapp, t.mensaje(p.nombre))}
+                href={whatsapp(contacto.whatsapp, t.mensaje({ grupo: titulo, titulo: p.nombre, link: linkFoto(p.fotos[0].src), producto: true }))}
                 target="_blank" rel="noreferrer"
                 className="mt-auto inline-flex min-h-11 items-center gap-1.5 px-1.5 pt-2 text-sm text-acento underline decoration-acento/40 underline-offset-5 hover:decoration-acento"
               >
@@ -224,7 +252,8 @@ export function Productos({ fotos, titulo }: { fotos: TFoto[]; titulo: string })
         </ul>
       </div>
       <Visor
-        fotos={abierto?.g.fotos ?? []} indice={abierto ? abierto.i : null} nombre={abierto?.g.nombre ?? ""}
+        producto
+        fotos={(abierto?.g.fotos ?? []).map((f) => ({ ...f, grupo: titulo }))} indice={abierto ? abierto.i : null} nombre={abierto?.g.nombre ?? ""}
         alCambiar={(i) => abierto && setAbierto({ ...abierto, i })} alCerrar={() => setAbierto(null)}
       />
     </section>
