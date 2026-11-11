@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a0b10" />
+    <!-- Los __TEXTOS__ se completan solos al compilar, página por página, con lo de src/contenido.ts -->
+    <title>__TITULO__</title>
+    <meta name="description" content="__DESCRIPCION__" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="__URL_PAGINA__" />
+
+    <!-- Vista previa al compartir (WhatsApp, Instagram, LinkedIn) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="__NOMBRE__" />
+    <meta property="og:title" content="__TITULO__" />
+    <meta property="og:description" content="__DESCRIPCION__" />
+    <meta property="og:url" content="__URL_PAGINA__" />
+    <meta property="og:locale" content="es_AR" />
+    <!-- Imagen de 1200x630 en public/img/compartir.jpg -->
+    <meta property="og:image" content="__URL__img/compartir.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Fuentes precargadas: el texto del hero sale con la letra correcta desde el principio -->
+    <link rel="preload" href="%BASE_URL%fonts/chivo-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="%BASE_URL%fonts/chivo-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="%BASE_URL%fonts/jetbrains-mono-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="%BASE_URL%fonts/cormorant-600-italic.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+
+    <!-- Datos del negocio para Google -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FurnitureStore",
+        "name": "Neo Design Lanús",
+        "url": "__URL__",
+        "image": "__URL__img/compartir.jpg",
+        "description": "__DESCRIPCION__",
+        "telephone": "+54 9 11 6444-4340",
+        "email": "neodesignlanus@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "General Ferré 2101 (esquina Margarita Weild)",
+          "addressLocality": "Lanús Este",
+          "addressRegion": "Buenos Aires",
+          "addressCountry": "AR"
+        },
+        "areaServed": "AR",
+        "sameAs": ["https://www.instagram.com/neodesignlanus/", "https://www.facebook.com/neodesignlanus/"]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
