@@ -65,6 +65,9 @@
        igual en todas: así el título no "salta" al cambiar de página. */
     --arranque: clamp(48px, 15vh, 160px);
     /* Resplandor bordó detrás del título de cada primer panel */
+    /* Solo el resplandor, sobre bg-negro (la página Contacto: así su borde de abajo
+       es el mismo bordó noche donde arranca el fundido del pie) */
+    --resplandor: radial-gradient(ellipse 60% 80% at 12% 40%, rgb(97 3 38 / .55), transparent 100%);
     --hero-fondo:
       radial-gradient(ellipse 60% 80% at 12% 40%, rgb(97 3 38 / .55), transparent 100%),
       linear-gradient(135deg, #1a0b10 10%, #14080c 60%, #0f0609 100%);
@@ -86,7 +89,7 @@
   }
   /* Foco con teclado: bordó sobre claro, rosa sobre oscuro */
   :focus-visible { @apply outline-2 outline-offset-3 outline-acento; }
-  :is(.oscuro, header, footer, dialog) :focus-visible { @apply outline-acento-claro; }
+  :is(.oscuro, header, dialog) :focus-visible { @apply outline-acento-claro; }
 }
 
 /* Piezas que se repiten: una clase propia en vez de la misma tira de utilidades copiada */

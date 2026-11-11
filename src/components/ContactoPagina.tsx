@@ -8,7 +8,7 @@ const claseDato = "inline-flex min-h-11 items-center gap-2 text-[clamp(17px,1.4v
  *  a la derecha, el formulario que arma el mensaje de WhatsApp. */
 export function ContactoPagina() {
   return (
-    <section className="oscuro min-h-svh overflow-hidden bg-(image:--hero-fondo) pt-[calc(var(--nav)+var(--arranque))] pb-[clamp(72px,9vw,140px)]" aria-labelledby="panel-titulo">
+    <section className="oscuro min-h-svh overflow-hidden bg-(image:--resplandor) pt-[calc(var(--nav)+var(--arranque))] pb-[clamp(72px,9vw,140px)]" aria-labelledby="panel-titulo">
       <Ruido id="ruido-contacto-pagina" />
       <div className="ancho">
         <p className="etiqueta text-gris">{t.etiqueta}</p>
